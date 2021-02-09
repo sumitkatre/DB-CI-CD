@@ -1,0 +1,12 @@
+ # # steps:
+    # # # Create Cloud SQL Instance
+    # # - name: gcr.io/cloud-builders/gcloud
+    # #   id: 'create_cloud_sql_instance'
+    # #   entrypoint: "bash"
+    # #   args: 
+    # #     - '-c' # pass what follows as a command to bash
+    # #     - |
+    # #       gcloud sql instances create $_INSTANCE_NAME --database-version=POSTGRES_11 \
+    # #        --cpu=$_NUMBER_CPUS --memory=$_MEMORY_SIZE \
+    # #        --region=[$_REGION] 
+    # #   waitFor: ["-"]
