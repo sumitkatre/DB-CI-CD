@@ -1,0 +1,9 @@
+steps:
+ - id: create_cloud_sql_instance
+   name: gcr.io/cloud-builders/postgres
+   args:
+      - sql
+      - databases
+      - create
+      - sumit-db123
+      - '--instance=ci-cd-db'
