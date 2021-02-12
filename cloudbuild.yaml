@@ -1,21 +1,28 @@
 steps:
- - id: create_cloud_sql_instance
-   name: 'alpine'
-   entrypoint: 'sh'
-   args:
+- name: 'alpine'
+  entrypoint: 'sh'
+  args:
     - '-c'
     - |
-        env | sort
-        echo "**********************************************"
-        echo "inside DB"
+        echo "$$USERNAME and $$PASSWORD"
         apk add postgresql
+        apk add bash
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.386 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
         echo "start proxy"
+        echo $$PROXY > ./proxy.json
         ./cloud_sql_proxy -instances=refined-magpie-270710:europe-west4:ci-cd-db=tcp:5432 \
-                -credential_file=./proxy.json  &
+                -credential_file=proxy.json  &
         `sleep 5`
-        PGPASSWORD=ikea123 psql -f ./instructions.sql  "host=127.0.0.1 sslmode=disable dbname=sandy user=postgres"
-        # chmod 777 "start_proxy.sh"
-        # echo "done done"
-        # `./start_proxy.sh`
+        PGPASSWORD=$$DB_PASSWORD psql -f ./instructions.sql  "host=127.0.0.1 sslmode=disable dbname=sandy user=$$DB_USERNAME"
+        
+  secretEnv: ['DB_USERNAME', 'DB_PASSWORD', 'PROXY']
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/refined-magpie-270710/secrets/postgres-password/versions/latest
+    env: 'DB_PASSWORD'
+  - versionName: projects/refined-magpie-270710/secrets/postgres-user/versions/latest
+    env: 'DB_USERNAME'
+  - versionName: projects/refined-magpie-270710/secrets/cloud-sql-proxy-auth/versions/latest
+    env: 'PROXY'

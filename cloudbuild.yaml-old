@@ -1,0 +1,27 @@
+steps:
+- id: create_cloud_sql_instance
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+        env | sort
+        echo "**********************************************"
+        echo "inside DB"
+        apk add postgresql
+        apk add bash
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.386 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+        echo "start proxy"
+        ./cloud_sql_proxy -instances=refined-magpie-270710:europe-west4:ci-cd-db=tcp:5432 \
+                -credential_file=proxy.json  &
+        `sleep 5`
+        #PGPASSWORD=$$DB_PASSWORD psql -f ./instructions.sql  "host=127.0.0.1 sslmode=disable dbname=sandy user=$$DB_USERNAME"
+               
+  secretEnv: ['DB_USERNAME', 'DB_PASSWORD']
+availableSecrets:
+  secretManager:
+  - versionName: projects/refined-magpie-270710/secrets/postgres-password/versions/1
+    env: 'DB_PASSWORD'
+  - versionName: projects/refined-magpie-270710/secrets/postgres-user/versions/1
+    env: 'DB_USERNAME'
