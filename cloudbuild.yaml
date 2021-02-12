@@ -11,6 +11,11 @@ steps:
         apk add postgresql
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.386 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
-
+        echo "start proxy"
         ./cloud_sql_proxy -instances=refined-magpie-270710:europe-west4:ci-cd-db=tcp:5432 \
-                  -credential_file=proxy.json &
+                -credential_file=./proxy.json  &
+        `sleep 5`
+        PGPASSWORD=ikea123 psql -f ./calldata1.sql  "host=127.0.0.1 sslmode=disable dbname=sandy user=postgres"
+        # chmod 777 "start_proxy.sh"
+        # echo "done done"
+        # `./start_proxy.sh`
