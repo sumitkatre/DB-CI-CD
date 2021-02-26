@@ -76,11 +76,11 @@ def get_index_context():
             
             json_string = json.dumps(votes, indent=4, sort_keys=True, default=str)
             print("**************")
-            #print(sumit_1)
+            print(json_string)
             json_object = json.loads(json_string)
             print("**************")
             #print(json_object)
-            print("**************")
+            #print("**************")
             #return json_object
             return json_object
         #f = open("demofile2.txt", "w")
@@ -136,6 +136,13 @@ try:
     )  # Make an API request.
 
     load_job.result()  # Waits for the job to complete.
+
+    dml_statement = (
+    "UPDATE taxirides.taxi "
+    "SET age = 101 "
+    "WHERE name like '%Aditya%'")
+    query_job = client.query(dml_statement)  # API request
+    query_job.result()  # Waits for statement to finish
 
 except Exception as e:
         # If something goes wrong, handle the error in this section. This might
